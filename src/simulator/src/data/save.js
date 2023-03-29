@@ -348,7 +348,7 @@ export default async function save() {
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
-    if (!userSignedIn) {
+    if (!window.loggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
         localStorage.setItem('recover_login', data)
         // Asking user whether they want to login.
@@ -360,10 +360,10 @@ export default async function save() {
             window.location.href = '/users/sign_in'
         else $('.loadingIcon').fadeOut()
         // eslint-disable-next-line camelcase
-    } else if (__logix_project_id == '0') {
+    } else if (window.projectName == undefined) {
         // Create new project - this part needs to be improved and optimised
         const form = $('<form/>', {
-            action: '/simulator/create_data',
+            action: 'http://localhost:3001/simulator/create_data',
             method: 'post',
         })
         form.append(
@@ -399,37 +399,39 @@ export default async function save() {
         $('body').append(form)
         form.submit()
     } else {
-        // updates project - this part needs to be improved and optimised
-        $.ajax({
-            url: '/simulator/update_data',
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend(xhr) {
-                xhr.setRequestHeader(
-                    'X-CSRF-Token',
-                    $('meta[name="csrf-token"]').attr('content')
-                )
+        fetch('http://localhost:3001/simulator/update_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             },
-            data: JSON.stringify({
+            body: JSON.stringify({
                 data,
-                id: __logix_project_id,
+                id: window.projectName,
                 image: imageData,
                 name: projectName,
             }),
-            success(response) {
-                showMessage(
-                    `We have saved your project: ${projectName} in our servers.`
-                )
-                $('.loadingIcon').fadeOut()
-                localStorage.removeItem('recover')
-            },
-            failure(err) {
+        })
+            .then((response) => {
+                if (response.ok) {
+                    showMessage(
+                        `We have saved your project: ${projectName} in our servers.`
+                    )
+                    $('.loadingIcon').fadeOut()
+                    localStorage.removeItem('recover')
+                } else {
+                    showMessage(
+                        "There was an error, we couldn't save to our servers"
+                    )
+                    $('.loadingIcon').fadeOut()
+                }
+            })
+            .catch((error) => {
                 showMessage(
                     "There was an error, we couldn't save to our servers"
                 )
                 $('.loadingIcon').fadeOut()
-            },
-        })
+            })
     }
 
     // Restore everything

@@ -13,8 +13,22 @@ const routes = [
         path: '/simulator',
         name: 'simulator',
         component: simulator,
+        // props: true,
+        children: [
+            {
+                path: 'edit/:projectId',
+                name: 'simulator-edit',
+                component: simulator,
+                props: true,
+            },
+        ],
+    },
+    {
+        path: '/:catchAll(.*)',
+        component: index,
     },
 ]
+
 const router = createRouter({
     history: createWebHistory(),
     routes,

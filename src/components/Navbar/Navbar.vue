@@ -32,15 +32,23 @@ import userDropdownItems from '#/assets/constants/Navbar/USER_DATA'
 import Logo from '@/Logo/Logo.vue'
 import Hamburger from '@/Navbar/Hamburger/Hamburger.vue'
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '#/store/SimulatorStore/state'
+import { computed } from '@vue/reactivity'
 
 const navbarLogo = ref('logo')
 const minWidthToShowSidebar = ref(992)
-const isUserSignedIn = ref(false)
+// const isUserSignedIn = ref(false)
+const authData = useAuthStore()
+// const isUserSignedIn = authData.loggedIn
 const showSidebar = ref(false)
 showSidebar.value =
     window.innerWidth < minWidthToShowSidebar.value ? true : false
 onMounted(() => {
     window.addEventListener('resize', checkShowSidebar)
+})
+const isUserSignedIn = computed(() => {
+    console.log(authData.loggedIn)
+    return authData.loggedIn
 })
 function checkShowSidebar() {
     showSidebar.value =

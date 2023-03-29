@@ -9,6 +9,26 @@ export interface State {
     combinationalAnalysis: Object
 }
 
+export const useAuthStore = defineStore({
+    id: 'auth',
+    state: () => ({
+        loggedIn: false,
+        user: {},
+        project: {},
+    }),
+    actions: {
+        setLoggedIn(loggedIn: boolean) {
+            this.loggedIn = loggedIn
+        },
+        setUser(user: Object) {
+            this.user = user
+        },
+        setProject(project: Object) {
+            this.project = project
+        },
+    },
+})
+
 export const useState = defineStore({
     id: 'simulatorStore.state',
 

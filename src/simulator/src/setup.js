@@ -140,40 +140,44 @@ export function setup() {
     // }
 
     // Load project data after 1 second - needs to be improved, delay needs to be eliminated
-    setTimeout(() => {
-        let __logix_project_id = 0
-        if (__logix_project_id != 0) {
-            $('.loadingIcon').fadeIn()
-            $.ajax({
-                url: `/simulator/get_data/${__logix_project_id}`,
-                type: 'GET',
-                success(response) {
-                    var data = response
-                    if (data) {
-                        load(data)
-                        simulationArea.changeClockTime(data.timePeriod || 500)
-                    }
-                    $('.loadingIcon').fadeOut()
-                },
-                failure() {
-                    alert('Error: could not load ')
-                    $('.loadingIcon').fadeOut()
-                },
+    // setTimeout(() => {
+    // let __logix_project_id = 0
+
+    if (window.projectName) {
+        $('.loadingIcon').fadeIn()
+        fetch(
+            `http://localhost:3001/simulator/get_data/${window.projectName}`,
+            {
+                method: 'GET',
+            }
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    load(data)
+                    simulationArea.changeClockTime(data.timePeriod || 500)
+                }
+                $('.loadingIcon').fadeOut()
             })
-        } else if (localStorage.getItem('recover_login') && userSignedIn) {
-            // Restore unsaved data and save
-            var data = JSON.parse(localStorage.getItem('recover_login'))
-            load(data)
-            localStorage.removeItem('recover')
-            localStorage.removeItem('recover_login')
-            save()
-        } else if (localStorage.getItem('recover')) {
-            // Restore unsaved data which didn't get saved due to error
-            showMessage(
-                "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
-            )
-        }
-    }, 1000)
+            .catch((error) => {
+                alert('Error: could not load ')
+                $('.loadingIcon').fadeOut()
+                console.log(error)
+            })
+    } else if (localStorage.getItem('recover_login') && userSignedIn) {
+        // Restore unsaved data and save
+        var data = JSON.parse(localStorage.getItem('recover_login'))
+        load(data)
+        localStorage.removeItem('recover')
+        localStorage.removeItem('recover_login')
+        save()
+    } else if (localStorage.getItem('recover')) {
+        // Restore unsaved data which didn't get saved due to error
+        showMessage(
+            "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
+        )
+    }
+    // }, 1000)
 
     if (!localStorage.tutorials_tour_done && !embed) {
         setTimeout(() => {

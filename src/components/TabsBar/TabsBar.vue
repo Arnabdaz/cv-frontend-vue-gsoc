@@ -25,7 +25,7 @@
                     @click="switchCircuit(element.id)"
                 >
                     <span class="circuitName noSelect">
-                        {{ truncateString(scopeList[element.id].name, 18) }}
+                        {{ truncateString(scopeList[element.id]?.name, 18) }}
                     </span>
                     <span
                         id="scope.id"
@@ -156,9 +156,7 @@ function deleteCircuit(circuitItem) {
     updateCount.value++
 }
 
-
 function dialogBoxConformation(selectedOption, circuitItem) {
-
     SimulatorState.dialogBox.create_circuit = false
     if (selectedOption == 'confirmDeletion') {
         deleteCircuit(circuitItem)

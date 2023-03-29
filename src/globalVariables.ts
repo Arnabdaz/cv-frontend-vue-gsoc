@@ -13,6 +13,10 @@ window.restrictedElements = []
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
 window.projectId = undefined
+window.projectName = undefined
+window.loggedIn = false
+window.projectAuthor = null
+window.loggedInUserId = undefined
 window.id = undefined
 window.loading = false // Flag - all assets are loaded
 

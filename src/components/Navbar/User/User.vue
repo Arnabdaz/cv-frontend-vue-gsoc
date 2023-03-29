@@ -9,7 +9,7 @@
                 role="button"
                 aria-haspopup="true"
                 aria-expanded="false"
-                >Devjit Choudhury<span class="caret acc-caret"></span
+                >{{ userName }}<span class="caret acc-caret"></span
             ></a>
             <DropDown
                 :list-items="userData"
@@ -30,6 +30,14 @@
 
 <script lang="ts" setup>
 import DropDown from '@/Dropdown/DropDown.vue'
+import { useAuthStore } from '#/store/SimulatorStore/state'
+import { computed } from '@vue/reactivity'
+
+const authData = useAuthStore()
+
+const userName = computed(() => {
+    return authData.user.attributes.name
+})
 
 const props = defineProps({
     isUserSignedIn: { type: Boolean, default: false },
