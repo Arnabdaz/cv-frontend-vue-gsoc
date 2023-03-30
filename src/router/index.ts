@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import index from '../pages/index.vue'
 import simulator from '../pages/simulator.vue'
+import Embed from '#/pages/embed.vue'
 
 const routes = [
     {
@@ -22,6 +23,12 @@ const routes = [
                 props: true,
             },
         ],
+    },
+    {
+        path: '/simulator/embed/:projectId',
+        name: 'simulator-embed',
+        component: Embed,
+        props: true,
     },
     {
         path: '/:catchAll(.*)',

@@ -126,7 +126,7 @@ function setupElementLists() {
  */
 export function setup() {
     // console.log('hello from set up')
-    let embed = false
+    // let embed = false
     const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
     setupEnvironment()
