@@ -2,16 +2,17 @@ import { createRouter, createWebHistory } from 'vue-router'
 import index from '../pages/index.vue'
 import simulator from '../pages/simulator.vue'
 import Embed from '#/pages/embed.vue'
+import Testbench from '#/pages/testbench.vue'
 
 const routes = [
     {
         path: '/',
         // name: 'index',
         // component: index,
-        redirect: '/simulator',
+        redirect: '/simulatorvue',
     },
     {
-        path: '/simulator',
+        path: '/simulatorvue',
         name: 'simulator',
         component: simulator,
         // props: true,
@@ -25,10 +26,15 @@ const routes = [
         ],
     },
     {
-        path: '/simulator/embed/:projectId',
+        path: '/simulatorvue/embed/:projectId',
         name: 'simulator-embed',
         component: Embed,
         props: true,
+    },
+    {
+        path: '/testbench',
+        name: 'testbench',
+        component: Testbench,
     },
     {
         path: '/:catchAll(.*)',

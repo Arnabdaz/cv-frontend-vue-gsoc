@@ -182,6 +182,7 @@ input[type='text']:focus {
     width: 35vw;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-right: auto;
 }
 
 @media (max-width: 991px) {
@@ -1937,7 +1938,7 @@ canvas {
 }
 
 /* CustomColorInput Styles Starts Here */
-.customColorInput{
+.customColorInput {
     cursor: pointer;
     width: 30%;
     height: 30px;
@@ -1952,9 +1953,8 @@ canvas {
     border-color: buttonborder;
     border-image: initial;
     padding: 1px 2px;
-    
 }
-.customColorLabel{
+.customColorLabel {
     width: 60%;
     height: 30px;
 }
@@ -2021,7 +2021,7 @@ canvas {
 
 /* media query for .messageBoxContent */
 @media screen and (max-width: 991px) {
-    .messageBoxContent{
+    .messageBoxContent {
         width: 100%;
     }
 }

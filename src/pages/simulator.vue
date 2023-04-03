@@ -31,7 +31,7 @@ export default {
         console.log(window.projectName)
         const authStore = useAuthStore()
 
-        const mePromise = fetch('http://localhost:3001/api/v1/me', {
+        const mePromise = fetch('/api/v1/me', {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -49,14 +49,11 @@ export default {
             .catch((error) => console.error(error))
 
         const projectPromise = window.projectName
-            ? fetch(
-                  `http://localhost:3001/api/v1/projects/${window.projectName}`,
-                  {
-                      headers: {
-                          'Content-Type': 'application/json',
-                      },
-                  }
-              )
+            ? fetch(`/api/v1/projects/${window.projectName}`, {
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              })
                   .then((response) => response.json())
                   .then((data) => {
                       console.log(data.data)

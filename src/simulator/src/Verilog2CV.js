@@ -180,7 +180,7 @@ export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
-    const url = 'http://localhost:3001/simulator/verilogcv'
+    const url = '/simulator/verilogcv'
     var params = 'code=' + encodeURIComponent(verilogCode)
     fetch(url, {
         method: 'POST',

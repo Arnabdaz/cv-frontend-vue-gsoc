@@ -1,9 +1,9 @@
-.tb-test-title {
+/* .tb-test-title {
     text-align: center;
     margin-top: 50px;
-}
+} */
 
-.lower-button {
+/* .lower-button {
     height: 40px;
     width: auto;
     min-width: 40px;
@@ -11,15 +11,15 @@
     border: 2px solid black;
     color: black;
     /*padding: 20px;*/
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    /*font-size: 16px;*/
-    margin: 4px 2px;
-    border-radius: 4px;
-}
+/* text-align: center; */
+/* text-decoration: none; */
+/* display: inline-block; */
+/*font-size: 16px;*/
+/* margin: 4px 2px; */
+/* border-radius: 4px; */
+/* } */
 
-.table-button {
+/* .table-button {
     height: 20px;
     width: 20px;
     background-color: #ffffff;
@@ -68,10 +68,10 @@
     padding: 14px 16px;
     font-size: 17px;
     width: 50%;
-}
+} */
 
 /* Change background color of buttons on hover */
-.tablink:hover.tablink-no-override {
+/* .tablink:hover.tablink-no-override {
     background-color: #a5dfc5;
 }
 
@@ -138,4 +138,4 @@ tr td:first-child {
 
 body {
     overflow: scroll;
-}
+} */

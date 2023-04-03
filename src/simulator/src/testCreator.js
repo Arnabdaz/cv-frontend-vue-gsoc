@@ -3,12 +3,12 @@
     at /testbench
 */
 
-import _ from '../vendor/table2csv'
+// import _ from '../vendor/table2csv'
 
-const CREATORMODE = {
-    NORMAL: 0,
-    SIMULATOR_POPUP: 1,
-}
+// const CREATORMODE = {
+//     NORMAL: 0,
+//     SIMULATOR_POPUP: 1,
+// }
 
 var testMode = 'comb'
 var groupIndex = 0
@@ -17,8 +17,8 @@ var nextInputIndex = 0
 var outputCount = 0
 var nextOutputIndex = 0
 var cases = [0]
-var creatorMode = CREATORMODE.NORMAL
-var circuitScopeID
+// var creatorMode = CREATORMODE.NORMAL
+// var circuitScopeID
 
 function dataReset() {
     groupIndex = -1
@@ -30,33 +30,31 @@ function dataReset() {
  * Check if test is being edited, or created
  */
 window.onload = () => {
-    const query = new URLSearchParams(window.location.search)
-    if (query.has('popUp')) {
-        if (query.get('popUp') == 'true') {
-            creatorMode = CREATORMODE.SIMULATOR_POPUP
-            $('.right-button-group').append(
-                '<button class="lower-button save-buton" onclick="saveData();">Attach</button>'
-            )
-        }
-    }
-    if (query.has('data')) {
-        $('#tb-creator-head').html('<b>Edit Test</b>')
-        circuitScopeID = query.get('scopeID')
-        loadData(query.get('data'))
-        return
-    }
-
-    if (query.has('result')) {
-        $('#tb-creator-head').html('<b>Test Result</b>')
-        loadResult(query.get('result'))
-        readOnlyUI()
-        return
-    }
-
-    circuitScopeID = query.get('scopeID')
-    addInput()
-    addOutput()
-    makeSortable()
+    // const query = new URLSearchParams(window.location.search)
+    // if (query.has('popUp')) {
+    //     if (query.get('popUp') == 'true') {
+    //         creatorMode = CREATORMODE.SIMULATOR_POPUP
+    //         $('.right-button-group').append(
+    //             '<button class="lower-button save-buton" onclick="saveData();">Attach</button>'
+    //         )
+    //     }
+    // }
+    // if (query.has('data')) {
+    //     $('#tb-creator-head').html('<b>Edit Test</b>')
+    //     circuitScopeID = query.get('scopeID')
+    //     loadData(query.get('data'))
+    //     return
+    // }
+    // if (query.has('result')) {
+    //     $('#tb-creator-head').html('<b>Test Result</b>')
+    //     loadResult(query.get('result'))
+    //     readOnlyUI()
+    //     return
+    // }
+    // circuitScopeID = query.get('scopeID')
+    // addInput()
+    // addOutput()
+    // makeSortable()
 }
 
 /* Change UI testMode between Combinational(comb) and Sequential(seq) */
@@ -135,7 +133,7 @@ function deleteGroup(element) {
 
 /* Adds input with default value 0 or values supplied in @param inputData */
 /* Used without params for UI, used with params by loadData() */
-function addInput(
+export function addInput(
     label = `inp${nextInputIndex + 1}`,
     bitwidth = 1,
     inputData = []
@@ -186,7 +184,7 @@ function addInput(
 /* Adds output with default value 0 or values supplied in @param outputData */
 /* Used without params for UI, used with params by loadData() */
 /* Used with resultData and result=true for setting result */
-function addOutput(
+export function addOutput(
     label = `out${nextOutputIndex + 1}`,
     bitwidth = 1,
     outputData = [],
@@ -457,7 +455,7 @@ function importFromCSV() {
         const jsonData = csv2json(csvContent, 1, 1)
 
         window.location = `/testbench?scopeID=${
-            circuitScopeID || ''
+            window.circuitScopeID || ''
         }&data=${jsonData}&popUp=${isPopup}`
     }
 
@@ -571,11 +569,11 @@ function download(filename, text) {
  * Called when Save is clicked. If opened in popup, sends message to parent window
  * to attach test to the testbench.
  */
-function saveData() {
+export function saveData() {
     const testData = parse()
 
-    if (creatorMode === CREATORMODE.SIMULATOR_POPUP) {
-        const postData = { scopeID: circuitScopeID, testData }
+    if (window.creatorMode === window.CREATORMODE.SIMULATOR_POPUP) {
+        const postData = { scopeID: window.circuitScopeID, testData }
         window.opener.postMessage(
             { type: 'testData', data: JSON.stringify(postData) },
             '*'
@@ -585,7 +583,7 @@ function saveData() {
 }
 
 /* Loads data from JSON string into the table */
-function loadData(dataJSON) {
+export function loadData(dataJSON) {
     const data = JSON.parse(dataJSON)
     if (data.title) $('#test-title-label').text(data.title)
     changeTestMode()
@@ -624,7 +622,7 @@ function loadData(dataJSON) {
 /**
  * Loads result from JSON string into the testbench creator UI
  */
-function loadResult(dataJSON) {
+export function loadResult(dataJSON) {
     const data = JSON.parse(dataJSON)
     if (data.title) $('#test-title-label').text(data.title)
     changeTestMode()
@@ -685,7 +683,7 @@ function loadResult(dataJSON) {
 /**
  * Makes the UI read only for displaying results
  */
-function readOnlyUI() {
+export function readOnlyUI() {
     makeContentUneditable()
     makeUnsortable()
     $('.lower-button, .table-button, .tb-minus').hide()
@@ -702,7 +700,7 @@ function makeContentUneditable() {
         })
 }
 
-function makeSortable() {
+export function makeSortable() {
     const helper = function (e, ui) {
         const helperE = ui.clone()
         helperE.children().each(function (child_i) {
@@ -734,18 +732,19 @@ function makeSortable() {
         }
     }
 
-    $('.data-group table').sortable({
-        handle: '.tb-handle',
-        helper,
-        start: makePlaceholder,
-        placeholder: 'clone',
-        connectWith: 'table',
-        receive: removeTbody, // For sortable hack
-        remove: createTbody, // For sortable hack
-        items: 'tr',
-        revert: 50,
-        scroll: false,
-    })
+    // TODO: remove jquery-ui dependency
+    // $('.data-group table').sortable({
+    //     handle: '.tb-handle',
+    //     helper,
+    //     start: makePlaceholder,
+    //     placeholder: 'clone',
+    //     connectWith: 'table',
+    //     receive: removeTbody, // For sortable hack
+    //     remove: createTbody, // For sortable hack
+    //     items: 'tr',
+    //     revert: 50,
+    //     scroll: false,
+    // })
 }
 
 function makeUnsortable() {

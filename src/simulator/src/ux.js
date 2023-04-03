@@ -718,16 +718,7 @@ $('#octalInput').on('keyup', () => {
     setBaseValues(x)
 })
 
-export function setupPanels() {
-    $('#dragQPanel')
-        .on('mousedown', () =>
-            $('.quick-btn').draggable({
-                disabled: false,
-                containment: 'window',
-            })
-        )
-        .on('mouseup', () => $('.quick-btn').draggable({ disabled: true }))
-
+function setupPanels() {
     setupPanelListeners('.elementPanel')
     setupPanelListeners('.layoutElementPanel')
     setupPanelListeners('#moduleProperty')
@@ -735,49 +726,176 @@ export function setupPanels() {
     setupPanelListeners('#verilogEditorPanel')
     setupPanelListeners('.timing-diagram-panel')
     setupPanelListeners('.testbench-manual-panel')
+    setupPanelDragging('.quick-btn')
 
     // Minimize Timing Diagram (takes too much space)
-    $('.timing-diagram-panel .minimize').trigger('click')
+    document.querySelector('.timing-diagram-panel .minimize').click()
 
     // Update the Testbench Panel UI
     updateTestbenchUI()
     // Minimize Testbench UI
-    $('.testbench-manual-panel .minimize').trigger('click')
+    document.querySelector('.testbench-manual-panel .minimize').click()
 
     // Hack because minimizing panel then maximizing sets visibility recursively
     // updateTestbenchUI calls some hide()s which are undone by maximization
     // TODO: Remove hack
-    $('.testbench-manual-panel .maximize').on('click', setupTestbenchUI)
+    document
+        .querySelector('.testbench-manual-panel .maximize')
+        .addEventListener('click', setupTestbenchUI)
 
-    $('#projectName').on('click', () => {
-        $("input[name='setProjectName']").focus().select()
+    document
+        .querySelector('#projectName')
+        .addEventListener('click', function () {
+            document.querySelector("input[name='setProjectName']").focus()
+            document.querySelector("input[name='setProjectName']").select()
+        })
+}
+
+function setupPanelDragging(panelSelector) {
+    if (panelSelector === '.quick-btn')
+        var panelDragSelector = `${panelSelector} .panel-drag`
+    else var panelDragSelector = `${panelSelector} .panel-header`
+
+    let isDragging = false
+    let dragStartX, dragStartY, dragStartPanelLeft, dragStartPanelTop
+
+    // Drag Start
+    $(panelDragSelector).on('mousedown', (event) => {
+        isDragging = true
+        dragStartX = event.clientX
+        dragStartY = event.clientY
+        const dragStartPanel = window.getComputedStyle(
+            document.querySelector(panelSelector)
+        )
+        dragStartPanelLeft = parseInt(dragStartPanel.getPropertyValue('left'))
+        dragStartPanelTop = parseInt(dragStartPanel.getPropertyValue('top'))
+
+        document.addEventListener('mousemove', onDrag)
+        document.addEventListener('mouseup', onDragEnd)
+    })
+
+    // Dragging
+    function onDrag(event) {
+        if (isDragging) {
+            const offsetX = event.clientX - dragStartX
+            const offsetY = event.clientY - dragStartY
+            let newPanelLeft = dragStartPanelLeft + offsetX
+            let newPanelTop = dragStartPanelTop + offsetY
+
+            // Get the boundaries of the window
+            const windowWidth = window.innerWidth
+            const windowHeight = window.innerHeight
+
+            // Get the width and height of the panel
+            const panelWidth = document.querySelector(panelSelector).offsetWidth
+            const panelHeight =
+                document.querySelector(panelSelector).offsetHeight
+
+            // Constrain the panel to the window boundaries
+            if (newPanelLeft < 0) {
+                newPanelLeft = 0
+            } else if (newPanelLeft + panelWidth > windowWidth) {
+                newPanelLeft = windowWidth - panelWidth
+            }
+            if (newPanelTop < 0) {
+                newPanelTop = 0
+            } else if (newPanelTop + panelHeight > windowHeight) {
+                newPanelTop = windowHeight - panelHeight
+            }
+
+            // Set the new position of the panel
+            // Use requestAnimationFrame to update the panel position
+            requestAnimationFrame(() => {
+                document.querySelector(panelSelector).style.left =
+                    newPanelLeft + 'px'
+                document.querySelector(panelSelector).style.top =
+                    newPanelTop + 'px'
+            })
+        }
+    }
+
+    // Drag End
+    function onDragEnd() {
+        if (isDragging) {
+            isDragging = false
+            document.removeEventListener('mousemove', onDrag)
+            document.removeEventListener('mouseup', onDragEnd)
+        }
+    }
+
+    // Current Panel on Top
+    $(panelSelector).on('mousedown', () => {
+        $(`.draggable-panel:not(${panelSelector})`).css('z-index', '100')
+        $(panelSelector).css('z-index', '101')
+    })
+
+    // Update panel position on window resize
+    window.addEventListener('resize', function () {
+        // Get the panel element
+        const panelElement = document.querySelector(panelSelector)
+
+        // Make sure the panel element exists before accessing its properties
+        if (panelElement) {
+            // Get the boundaries of the window
+            const windowWidth = window.innerWidth
+            const windowHeight = window.innerHeight
+
+            // Get the width and height of the panel
+            const panelWidth = panelElement.offsetWidth
+            const panelHeight = panelElement.offsetHeight
+
+            // Get the current position of the panel
+            const currentPanelLeft = parseInt(panelElement.style.left)
+            const currentPanelTop = parseInt(panelElement.style.top)
+
+            // Constrain the panel to the window boundaries
+            let newPanelLeft = currentPanelLeft
+            let newPanelTop = currentPanelTop
+            if (currentPanelLeft + panelWidth > windowWidth) {
+                newPanelLeft = windowWidth - panelWidth
+            }
+            if (currentPanelTop + panelHeight > windowHeight) {
+                newPanelTop = windowHeight - panelHeight
+            }
+
+            // Set the new position of the panel
+            panelElement.style.left = newPanelLeft + 'px'
+            panelElement.style.top = newPanelTop + 'px'
+        }
+    })
+
+    function disableSelection(element) {
+        element.setAttribute('unselectable', 'on')
+        element.style.userSelect = 'none'
+        element.style.webkitUserSelect = 'none'
+        element.style.MozUserSelect = 'none'
+        element.style.msUserSelect = 'none'
+        element.style.OUserSelect = 'none'
+        element.onselectstart = () => false
+    }
+    let panelElements = document.querySelectorAll(
+        '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+    )
+    panelElements.forEach((element) => {
+        disableSelection(element)
     })
 }
 
 function setupPanelListeners(panelSelector) {
-    var headerSelector = `${panelSelector} .panel-header`
-    var minimizeSelector = `${panelSelector} .minimize`
-    var maximizeSelector = `${panelSelector} .maximize`
-    var bodySelector = `${panelSelector} > .panel-body`
-    // Drag Start
-    $(headerSelector).on('mousedown', () =>
-        $(panelSelector).draggable({ disabled: false, containment: 'window' })
-    )
-    // Drag End
-    $(headerSelector).on('mouseup', () =>
-        $(panelSelector).draggable({ disabled: true })
-    )
-    // Current Panel on Top
-    $(panelSelector).on('mousedown', () => {
-        $(`.draggable-panel:not(${panelSelector})`).css('z-index', '70')
-        $(panelSelector).css('z-index', '71')
-    })
-    var minimized = false
+    const headerSelector = `${panelSelector} .panel-header`
+    const minimizeSelector = `${panelSelector} .minimize`
+    const maximizeSelector = `${panelSelector} .maximize`
+    const bodySelector = `${panelSelector} > .panel-body`
+
+    setupPanelDragging(panelSelector)
+
+    let minimized = false
     $(headerSelector).on('dblclick', () =>
         minimized
             ? $(maximizeSelector).trigger('click')
             : $(minimizeSelector).trigger('click')
     )
+
     // Minimize
     $(minimizeSelector).on('click', () => {
         $(bodySelector).hide()
@@ -785,6 +903,7 @@ function setupPanelListeners(panelSelector) {
         $(maximizeSelector).show()
         minimized = true
     })
+
     // Maximize
     $(maximizeSelector).on('click', () => {
         $(bodySelector).show()

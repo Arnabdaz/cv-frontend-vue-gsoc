@@ -83,9 +83,9 @@ import simulationArea from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
+// import { watch } from 'vue'
 const circuitId = ref(0)
 const circuitName = ref('Untitled-Cirucit')
-
 
 onMounted(() => {
     // checking if circuit or tab is switched
@@ -94,7 +94,7 @@ onMounted(() => {
             circuitName.value = globalScope.name
             circuitId.value = globalScope.id
         }
-    }, 100)
+    }, 250)
 })
 </script>
 

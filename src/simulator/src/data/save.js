@@ -363,7 +363,7 @@ export default async function save() {
     } else if (window.projectName == undefined) {
         // Create new project - this part needs to be improved and optimised
         const form = $('<form/>', {
-            action: 'http://localhost:3001/simulator/create_data',
+            action: '/simulator/create_data',
             method: 'post',
         })
         form.append(
@@ -399,20 +399,31 @@ export default async function save() {
         $('body').append(form)
         form.submit()
     } else {
-        fetch('http://localhost:3001/simulator/update_data', {
-            method: 'POST',
-            headers: {
+        // updates project - this part needs to be improved and optimized
+        const updateProject = async (
+            data,
+            projectId,
+            imageData,
+            projectName
+        ) => {
+            const csrfToken = $('meta[name="csrf-token"]').attr('content')
+            const headers = new Headers({
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-            },
-            body: JSON.stringify({
-                data,
-                id: window.projectName,
-                image: imageData,
-                name: projectName,
-            }),
-        })
-            .then((response) => {
+                'X-CSRF-Token': csrfToken,
+            })
+
+            try {
+                const response = await fetch('/simulator/update_data', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        data,
+                        id: projectId,
+                        image: imageData,
+                        name: projectName,
+                    }),
+                })
+
                 if (response.ok) {
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
@@ -425,13 +436,15 @@ export default async function save() {
                     )
                     $('.loadingIcon').fadeOut()
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 showMessage(
                     "There was an error, we couldn't save to our servers"
                 )
                 $('.loadingIcon').fadeOut()
-            })
+            }
+        }
+
+        updateProject(data, window.projectName, imageData, projectName)
     }
 
     // Restore everything

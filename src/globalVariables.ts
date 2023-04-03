@@ -27,3 +27,10 @@ window.height = undefined
 window.DPR = window.devicePixelRatio || 1 // devicePixelRatio, 2 for retina displays, 1 for low resolution displays
 
 window.elementHierarchy = []
+
+window.circuitScopeID
+window.CREATORMODE = {
+    NORMAL: 0,
+    SIMULATOR_POPUP: 1,
+}
+window.creatorMode = window.CREATORMODE.NORMAL

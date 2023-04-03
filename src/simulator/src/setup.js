@@ -12,7 +12,7 @@ import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
 import startMainListeners from './listeners'
-import startEmbedListeners from './embedListeners'
+// import startEmbedListeners from './embedListeners'
 import './embed'
 import { newCircuit, scopeList } from './circuit'
 import load from './data/load'
@@ -127,14 +127,17 @@ function setupElementLists() {
 export function setup() {
     // console.log('hello from set up')
     // let embed = false
-    const startListeners = embed ? startEmbedListeners : startMainListeners
+    // const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
     setupEnvironment()
     if (!embed) {
         setupUI()
     }
+    if (!embed) {
+        startMainListeners()
+    }
     // console.log('start_lis')
-    startListeners()
+    // startListeners()
     // if (!embed) {
     //     keyBinder()
     // }
@@ -145,12 +148,9 @@ export function setup() {
 
     if (window.projectName) {
         $('.loadingIcon').fadeIn()
-        fetch(
-            `http://localhost:3001/simulator/get_data/${window.projectName}`,
-            {
-                method: 'GET',
-            }
-        )
+        fetch(`/simulator/get_data/${window.projectName}`, {
+            method: 'GET',
+        })
             .then((response) => response.json())
             .then((data) => {
                 if (data) {
