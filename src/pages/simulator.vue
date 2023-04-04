@@ -39,8 +39,10 @@ export default {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data.data)
-                authStore.setLoggedIn(true)
-                window.loggedIn = true
+                if (data.data) {
+                    authStore.setLoggedIn(true)
+                    window.loggedIn = true
+                }
                 window.loggedInUserId = data.data.id
                 authStore.setUser(data.data)
                 if (data.data?.attributes?.locale)
